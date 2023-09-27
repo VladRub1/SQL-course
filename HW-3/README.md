@@ -225,7 +225,7 @@ SELECT '1.002e+308'::double precision ;
 Видно, что сложения не происходит, если потенциально 
 произойдет переполнение.
 
-Аналогично с вычитанием:
+Вычитание при больших значениях типа `double precision`:
 ```SQL
 SELECT '1e+308'::double precision - 
        '1e+10'::double precision > '1.001e+307'::double precision ;
