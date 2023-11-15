@@ -31,7 +31,9 @@ ALTER TABLE aircrafts_tmp
     ADD UNIQUE ( model );
 ```
 Далее создадим таблицу для логов, добавив поле `operation_timestamp`, 
-сделав по умолчанию значение функции `current_timestamp`:
+сделав по умолчанию значение функции `current_timestamp`. Пускай это
+поле будет последним в таблице, чтобы при добавлении строк можно было не
+указывать порядок столбцов, в которые мы вносим данные:
 ```SQL
 CREATE TEMP TABLE aircrafts_log AS
 SELECT * FROM aircrafts WITH NO DATA;
