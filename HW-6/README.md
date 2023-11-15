@@ -30,8 +30,8 @@ ALTER TABLE aircrafts_tmp
 ALTER TABLE aircrafts_tmp
     ADD UNIQUE ( model );
 ```
-Далее создадим таблицу для логов, добавив поле operation_timestamp, 
-сделав по умолчанию значение функции current_timestamp:
+Далее создадим таблицу для логов, добавив поле `operation_timestamp`, 
+сделав по умолчанию значение функции `current_timestamp`:
 ```SQL
 CREATE TEMP TABLE aircrafts_log AS
 SELECT * FROM aircrafts WITH NO DATA;
@@ -41,7 +41,7 @@ ALTER TABLE aircrafts_log
 ALTER TABLE aircrafts_log
     ADD COLUMN operation_timestamp timestamp DEFAULT ( current_timestamp );
 ```
-Теперь изменим команду INSERT так, чтобы напрямую не указывать время
+Теперь изменим команду `INSERT` так, чтобы напрямую не указывать время
 операции:
 ```SQL
 WITH add_row AS
@@ -75,11 +75,11 @@ SELECT * FROM aircrafts_log;
  CR2           | Bombardier CRJ-200  |  2700 | INSERT    | 2023-11-15 00:33:14.296826
 (9 строк)
 ```
-Видим, как и на лекции, что результат функции current_timestamp везде одинаковый, 
+Видим, как и на лекции, что результат функции `current_timestamp` везде одинаковый, 
 поскольку она возвращает время начала транзакции.
 
-Попробуем вместо функции current_timestamp использовать значение функции 
-clock_timestamp по умолчанию:
+Попробуем вместо функции ``current_timestamp`` использовать значение функции 
+`clock_timestamp` по умолчанию:
 ```SQL
 DROP TABLE aircrafts_tmp;
 DROP TABLE aircrafts_log;
@@ -177,11 +177,11 @@ ALTER TABLE aircrafts_log
 ALTER TABLE aircrafts_log
     ADD COLUMN operation text;
 ```
-Чтобы добавить aircrafts_log нужную информацию, нужно передать ее 
-после ключевого слова RETURNING. Для этого посмотрим, как устроена таблица 
-aircrafts_log:
+Чтобы добавить `aircrafts_log` нужную информацию, нужно передать ее 
+после ключевого слова `RETURNING`. Для этого посмотрим, как устроена таблица 
+`aircrafts_log`:
 ```SQL
-demo=# \d aircrafts_log
+\d aircrafts_log
                                   Таблица "pg_temp_3.aircrafts_log"
     Столбец    |             Тип             | Правило сортировки | Допустимость NULL | По умолчанию 
 ---------------+-----------------------------+--------------------+-------------------+--------------
@@ -193,7 +193,7 @@ demo=# \d aircrafts_log
 ```
 Я вижу два варианта:
 
-1. передать значение полей when_add и operation непосредственно в подзапросе add_row
+1. передать значение полей `when_add` и operation непосредственно в подзапросе ``add_row``
 2. передать их в "основном" запросе
 
 Попробую оба варианта. Для первого нужно будет использовать псевдонимы для полей,
@@ -238,7 +238,8 @@ select * from aircrafts_log ;
 в основном запросе:
 ```SQL
 WITH add_row AS
-( INSERT INTO aircrafts_tmp
+( 
+  INSERT INTO aircrafts_tmp
     SELECT * FROM aircrafts
     RETURNING aircraft_code, 
               model, 
@@ -296,7 +297,7 @@ select * from aircrafts_log ;
 
 Ответ:
 
-В начале вспомним структуру таблицы seats:
+В начале вспомним структуру таблицы `seats`:
 ```SQL
 \d seats
                                     Таблица "bookings.seats"
@@ -312,9 +313,9 @@ select * from aircrafts_log ;
 Ограничения внешнего ключа:
     "seats_aircraft_code_fkey" FOREIGN KEY (aircraft_code) REFERENCES aircrafts(aircraft_code) ON DELETE CASCADE
 ```
-Видим, что в ней всего три столбца: aircraft_code, seat_no, fare_conditions.
-Также нас интересует ограничение первичного ключа с названием seats_pkey,
-состоящее из двух столбцов: aircraft_code, seat_no
+Видим, что в ней всего три столбца: `aircraft_code`, `seat_no`, `fare_conditions`.
+Также нас интересует ограничение первичного ключа с названием `seats_pkey`,
+состоящее из двух столбцов: `aircraft_code`, `seat_no`.
 
 Скопируем таблицу с данными и, для простоты, добавим одно интересующее нас
 ограничение:
@@ -339,7 +340,7 @@ SELECT 1339
 Индексы:
     "seats_tmp_pkey" PRIMARY KEY, btree (aircraft_code, seat_no)
 ```
-Итак, нас будет интересовать ограничение с названием "seats_tmp_pkey", созданным
+Итак, нас будет интересовать ограничение с названием "`seats_tmp_pkey`", созданным
 автоматически.
 
 Еще посмотрим на первые значения:
@@ -361,7 +362,7 @@ SELECT * FROM seats_tmp LIMIT 10;
 (10 строк)
 ```
 Попробуем при добавлении новых значений, в случае нарушения ограничения,
-обновлять класс обслуживания (допустим, мы хотим таким образом изменить
+**обновлять** класс обслуживания (допустим, мы хотим таким образом изменить
 распределение кресел в салоне по классам обслуживания).
 
 В начале попробуем указать два столбца, входящие в ограничение, напрямую:
@@ -379,14 +380,14 @@ INSERT INTO seats_tmp
 (1 строка)
 ```
 Видим, что мы изменили класс обслуживания с бизнес-класса на эконом-класс у 
-кресла с номером 2A самолета с кодом 319. 
+кресла с номером `2A` самолета с кодом `319`. 
 
-Попробуем вывести все кресла 2А в наших самолетах, которые соответствуют 
+Попробуем вывести все кресла `2А` в наших самолетах, которые соответствуют 
 эконом-классу:
 ```SQL
-select * from seats_tmp 
-where fare_conditions = 'Economy'
-and seat_no = '2A';
+SELECT * FROM seats_tmp 
+WHERE fare_conditions = 'Economy'
+AND seat_no = '2A';
 
  aircraft_code | seat_no | fare_conditions 
 ---------------+---------+-----------------
@@ -395,11 +396,11 @@ and seat_no = '2A';
  319           | 2A      | Economy
 (3 строки)
 ```
-Видим, среди небольших самолетов, Airbus A319-100, у которого мы добавили новое 
+Видим, среди небольших самолетов, _Airbus A319-100_, у которого мы добавили новое 
 значение обновив старое.
 
 Теперь напрямую обратимся к ограничению и попробуем добавить бизнес-класс
-самолету Cessna 208 Caravan:
+самолету _Cessna 208 Caravan_:
 ```SQL
 INSERT INTO seats_tmp
     VALUES ( 'CN1', '2A', 'Business' )
@@ -415,9 +416,9 @@ INSERT INTO seats_tmp
 ```
 У него не так много мест, поэтому посмотрим на все:
 ```SQL
-select * from seats_tmp 
-where aircraft_code = 'CN1'
-order by seat_no;
+SELECT * FROM seats_tmp 
+WHERE aircraft_code = 'CN1'
+ORDER BY seat_no;
 
  aircraft_code | seat_no | fare_conditions 
 ---------------+---------+-----------------
@@ -435,6 +436,6 @@ order by seat_no;
  CN1           | 6B      | Economy
 (12 строк)
 ```
-Видим, что в самолете с кодом CN1 появилось одно кресло с бизнес-классом.
+Видим, что в самолете с кодом `CN1` появилось одно кресло с бизнес-классом.
 
 ---
