@@ -65,8 +65,7 @@ psql -d ais -c "SELECT * FROM Create_paths"
 Ответ:
 
 В начале создадим новую БД ais и наполним ее таблицами,
-триггерами и функциями из файла adj_list.sql
-
+триггерами и функциями из файла `adj_list.sql`:
 ```commandline
 createdb ais -U postgres
 psql -d ais -f adj_list.sql -U postgres
@@ -94,7 +93,7 @@ ais=# \d
 (4 строки)
 ```
 
-Видим одну схему public и 4 таблицы. Также можем посмотреть на 
+Видим одну схему `public` и 4 таблицы. Также можем посмотреть на 
 список функций:
 ```SQL
 ais=# \df
@@ -111,14 +110,14 @@ ais=# \df
 ```
 
 Теперь перейдем к заданию.
-Я вошел в терминал под пользователем postgres, поэтому
+Я вошел в терминал под пользователем `postgres`, поэтому
 я не буду указывать пользователя, от чьего имени нужно 
 выполнить команду.
 
 ```commandline
 psql -d ais -c "SELECT * FROM Personnel"
 ```
-```
+```commandline
 postgres@Yenisei:~$ psql -d ais -c "SELECT * FROM Personnel"
  emp_nbr | emp_name |         address         | birth_date 
 ---------+----------+-------------------------+------------
@@ -137,7 +136,7 @@ postgres@Yenisei:~$ psql -d ais -c "SELECT * FROM Personnel"
 ```commandline
 psql -d ais -c "SELECT * FROM Org_chart"
 ```
-```
+```commandline
 postgres@Yenisei:~$ psql -d ais -c "SELECT * FROM Org_chart"
       job_title      | emp_nbr | boss_emp_nbr |  salary   
 ---------------------+---------+--------------+-----------
@@ -155,7 +154,7 @@ postgres@Yenisei:~$ psql -d ais -c "SELECT * FROM Org_chart"
 ```commandline
 psql -d ais -c "SELECT * FROM Personnel_org_chart"
 ```
-```
+```commandline
 postgres@Yenisei:~$ psql -d ais -c "SELECT * FROM Personnel_org_chart"
  emp_nbr |   emp   | boss_emp_nbr | boss  
 ---------+---------+--------------+-------
@@ -173,7 +172,7 @@ postgres@Yenisei:~$ psql -d ais -c "SELECT * FROM Personnel_org_chart"
 ```commandline
 psql -d ais -c "SELECT * FROM Create_paths"
 ```
-```
+```commandline
 postgres@Yenisei:~$ psql -d ais -c "SELECT * FROM Create_paths"
  level1 | level2 | level3 | level4  
 --------+--------+--------+---------
@@ -186,7 +185,7 @@ postgres@Yenisei:~$ psql -d ais -c "SELECT * FROM Create_paths"
 ```
 
 Видим, что при вызове команд напрямую из терминала вывод такой
-же, как в psql.
+же, как в `psql`.
 
 ---
 
@@ -210,10 +209,10 @@ SELECT * FROM tree_test();
 
 Ответ:
 
-Я еще не вносил изменения в таблицы personnel и org_chart,
-поэтому могу сразу применить функцию tree_test():
+Я еще не вносил изменения в таблицы `personnel` и `org_chart`,
+поэтому могу сразу применить функцию `tree_test()`:
 ```SQL
-ais=# SELECT * FROM tree_test();
+SELECT * FROM tree_test();
 
  tree_test 
 -----------
@@ -239,7 +238,7 @@ ais=# SELECT * FROM tree_test();
 Для иллюстрации короткого цикла в нашей структуре 
 добавлю двух новых сотрудников, которых сделаю начальниками
 друг друга:
-```
+```SQL
 INSERT INTO Personnel VALUES
 (  9, 'Алекс', 'ул. Ленина', '1985-12-07' ),
 ( 10, 'Джон', 'ул. Ш. Холмса', '1999-01-05' );
@@ -253,8 +252,8 @@ INSERT 0 2
 
 Посмотрим, как теперь выглядят две таблицы с информацией
 про персонал:
-```
-ais=# select * from personnel ;
+```SQL
+select * from personnel ;
  emp_nbr | emp_name |         address         | birth_date 
 ---------+----------+-------------------------+------------
        0 | вакансия |                         | 2014-05-19
@@ -270,7 +269,7 @@ ais=# select * from personnel ;
       10 | Джон     | ул. Ш. Холмса           | 1999-01-05
 (11 строк)
 
-ais=# select * from org_chart ;
+select * from org_chart ;
       job_title      | emp_nbr | boss_emp_nbr |  salary   
 ---------------------+---------+--------------+-----------
  Президент           |       1 |              | 1000.0000
@@ -289,8 +288,8 @@ ais=# select * from org_chart ;
 друг друга.
 
 Проверим работу функции:
-```
-ais=# select * from tree_test() ;
+```SQL
+select * from tree_test() ;
  tree_test 
 -----------
  Cycles
@@ -303,7 +302,7 @@ ais=# select * from tree_test() ;
 Теперь сделаю в данных длинный цикл. Для этого я добавлю еще
 одного сотрудника (третьего), и сделаю следующую структуру 
 руководства между ними: `9 -> 10 -> 11 -> 9`
-```
+```SQL
 INSERT INTO Personnel VALUES
 ( 11, 'Джеймс', 'ул. Б. Гейтса', '1997-11-05' );
 INSERT 0 1
@@ -313,7 +312,7 @@ INSERT INTO Org_chart VALUES
 INSERT 0 1
 ```
 Обновим информацию про руководителя у сотрудника с `emp_nbr = 10`:
-```
+```SQL
 UPDATE org_chart
 SET boss_emp_nbr = 11
 WHERE emp_nbr = 10;
@@ -321,8 +320,8 @@ WHERE emp_nbr = 10;
 UPDATE 1
 ```
 Теперь данные выглядят так:
-```
-ais=# select * from personnel ;
+```SQL
+select * from personnel ;
  emp_nbr | emp_name |         address         | birth_date 
 ---------+----------+-------------------------+------------
        0 | вакансия |                         | 2014-05-19
@@ -339,7 +338,7 @@ ais=# select * from personnel ;
       11 | Джеймс   | ул. Б. Гейтса           | 1997-11-05
 (12 строк)
 
-ais=# select * from org_chart order by emp_nbr;
+select * from org_chart order by emp_nbr;
       job_title      | emp_nbr | boss_emp_nbr |  salary   
 ---------------------+---------+--------------+-----------
  Президент           |       1 |              | 1000.0000
@@ -356,8 +355,8 @@ ais=# select * from org_chart order by emp_nbr;
 (11 строк)
 ```
 Похоже на длинный цикл. Проверим работу функции:
-```
-ais=# select * from tree_test() ;
+```SQL
+select * from tree_test() ;
  tree_test 
 -----------
  Cycles
@@ -397,7 +396,7 @@ SELECT * FROM up_tree_traversal2( 6 ) AS (emp int, boss int);
 возвращающий код работника в качестве своего 
 результата. Не забудьте, что текст подзапроса 
 заключается в скобки, поэтому появляются двойные скобки:
-```
+```SQL
 SELECT * FROM up_tree_traversal( ( SELECT … FROM Personnel WHERE …) );
 ```
 Завершите эту команду и выполните ее с различными именами работников.
@@ -409,7 +408,7 @@ SELECT * FROM up_tree_traversal( ( SELECT … FROM Personnel WHERE …) );
 вверх. В начале посмотрим на структуру руководства, 
 начиная с сотрудника с `emp_nbr = 6`:
 ```SQL
-ais=# SELECT * FROM up_tree_traversal( 6 );
+SELECT * FROM up_tree_traversal( 6 );
 
  emp_nbr | boss_emp_nbr 
 ---------+--------------
@@ -419,8 +418,8 @@ ais=# SELECT * FROM up_tree_traversal( 6 );
 (3 строки)
 ```
 Теперь посмотрим на всю структуру для проверки: 
-```
-ais=# select * from org_chart where emp_nbr <= 6;
+```SQL
+select * from org_chart where emp_nbr <= 6;
 
       job_title      | emp_nbr | boss_emp_nbr |  salary   
 ---------------------+---------+--------------+-----------
@@ -436,8 +435,8 @@ ais=# select * from org_chart where emp_nbr <= 6;
 
 Посмотрим на структуру работника, у которого она будет 
 составлять 4 уровня:
-```
-ais=# SELECT * FROM up_tree_traversal( 8 );
+```SQL
+SELECT * FROM up_tree_traversal( 8 );
 
  emp_nbr | boss_emp_nbr 
 ---------+--------------
@@ -450,8 +449,8 @@ ais=# SELECT * FROM up_tree_traversal( 8 );
 
 Если запустить функцию в цикл, она зависнет и 
 ее придется обрывать вручную:
-```
-ais=# SELECT * FROM up_tree_traversal( 11 );
+```SQL
+SELECT * FROM up_tree_traversal( 11 );
 
 ^CCancel request sent
 ОШИБКА:  выполнение оператора отменено по запросу пользователя
@@ -462,7 +461,7 @@ ais=# SELECT * FROM up_tree_traversal( 11 );
 Дальше воспользуемся второй функцией, которая возвращает 
 `SETOF RECORD`:
 ```SQL
-ais=# SELECT * FROM up_tree_traversal2( 6 ) AS (emp int, boss int);
+SELECT * FROM up_tree_traversal2( 6 ) AS (emp int, boss int);
 
  emp | boss 
 -----+------
@@ -472,8 +471,8 @@ ais=# SELECT * FROM up_tree_traversal2( 6 ) AS (emp int, boss int);
 (3 строки)
 ```
 На другом сотруднике с 4 уровнями управления:
-```
-ais=# SELECT * FROM up_tree_traversal2( 8 ) AS (emp int, boss int);
+```SQL
+SELECT * FROM up_tree_traversal2( 8 ) AS (emp int, boss int);
 
  emp | boss 
 -----+------
@@ -487,7 +486,7 @@ ais=# SELECT * FROM up_tree_traversal2( 8 ) AS (emp int, boss int);
 Далее попробуем в качестве параметра этих функций использовать
 подзапрос, возвращающий код работника в качестве своего 
 результата:
-```
+```SQL
 SELECT * FROM up_tree_traversal( 
 ( SELECT emp_nbr FROM Personnel WHERE emp_name = 'Анна' ) 
 );
@@ -503,7 +502,7 @@ SELECT * FROM up_tree_traversal(
 два сотрудника с одинаковыми именами, возникли бы проблемы.
 В качестве временного решения можно дополнительно добавить в
 фильтр дату рождения (`birth_date`):
-```
+```SQL
 SELECT * FROM up_tree_traversal( 
 ( SELECT emp_nbr FROM Personnel 
   WHERE emp_name = 'Анна' AND birth_date = '1969-03-20' ) 
@@ -518,7 +517,7 @@ SELECT * FROM up_tree_traversal(
 ```
 Попробуем найти `emp_nbr` и использовать его в функции
 `up_tree_traversal()` для других сотрудников:
-```
+```SQL
 SELECT * FROM up_tree_traversal( 
 ( SELECT emp_nbr FROM Personnel 
   WHERE emp_name = 'Николай' AND birth_date = '1944-12-01' ) 
@@ -562,7 +561,7 @@ SELECT * FROM delete_subtree( 6 );
 посмотрим на то, как выглядят представления `personnel_org_chart` 
 и `create_paths` в изначальном состоянии:
 ```SQL
-ais=# select * from personnel_org_chart ;
+select * from personnel_org_chart ;
 
  emp_nbr |   emp   | boss_emp_nbr | boss  
 ---------+---------+--------------+-------
@@ -577,7 +576,7 @@ ais=# select * from personnel_org_chart ;
 (8 строк)
 
 
-ais=# select * from create_paths ;
+select * from create_paths ;
 
  level1 | level2 | level3 | level4  
 --------+--------+--------+---------
@@ -603,7 +602,7 @@ SELECT * FROM delete_subtree( 6 );
 
 Посмотрим, как изменились представления:
 ```SQL
-ais=# select * from personnel_org_chart ;
+select * from personnel_org_chart ;
  emp_nbr |   emp   | boss_emp_nbr | boss  
 ---------+---------+--------------+-------
        1 | Иван    |              | 
@@ -615,7 +614,7 @@ ais=# select * from personnel_org_chart ;
        8 | Николай |            5 | Ирина
 (7 строк)
 
-ais=# select * from create_paths ;
+select * from create_paths ;
  level1 | level2 | level3 | level4  
 --------+--------+--------+---------
  Иван   | Антон  | Ирина  | Андрей
@@ -630,7 +629,7 @@ ais=# select * from create_paths ;
 
 Хотя в таблице `personnel` она все равно осталась:
 ```SQL
-ais=# select * from personnel ;
+select * from personnel ;
  emp_nbr | emp_name |         address         | birth_date 
 ---------+----------+-------------------------+------------
        0 | вакансия |                         | 2014-05-19
@@ -659,7 +658,7 @@ SELECT * FROM delete_subtree(
 ```
 Все получилось успешно:
 ```SQL
-ais=# select * from personnel_org_chart ;
+select * from personnel_org_chart ;
 
  emp_nbr |  emp   | boss_emp_nbr | boss  
 ---------+--------+--------------+-------
@@ -672,7 +671,7 @@ ais=# select * from personnel_org_chart ;
 (6 строк)
 
 
-ais=# select * from create_paths ;
+select * from create_paths ;
 
  level1 | level2 | level3 | level4 
 --------+--------+--------+--------
@@ -719,7 +718,7 @@ SELECT * FROM delete_and_promote_subtree( 5 );
 `personnel_org_chart` и `create_paths` после 
 изменений в иерархии:
 ```SQL
-ais=# select * from personnel_org_chart ;
+select * from personnel_org_chart ;
 
  emp_nbr |   emp   | boss_emp_nbr | boss  
 ---------+---------+--------------+-------
@@ -733,7 +732,7 @@ ais=# select * from personnel_org_chart ;
 (7 строк)
 
 
-ais=# select * from create_paths ;
+select * from create_paths ;
 
  level1 | level2 | level3  | level4 
 --------+--------+---------+--------
@@ -758,7 +757,7 @@ SELECT * FROM delete_and_promote_subtree(
 ```
 Посмотрим, что получилось:
 ```SQL
-ais=# select * from personnel_org_chart ;
+select * from personnel_org_chart ;
 
  emp_nbr |   emp   | boss_emp_nbr | boss 
 ---------+---------+--------------+------
@@ -771,7 +770,7 @@ ais=# select * from personnel_org_chart ;
 (6 строк)
 
 
-ais=# select * from create_paths ;
+select * from create_paths ;
 
  level1 | level2  | level3 | level4 
 --------+---------+--------+--------
@@ -790,7 +789,7 @@ ais=# select * from create_paths ;
 `org_chart`).
 
 ```SQL
-ais=# select * from personnel ;
+select * from personnel ;
 
  emp_nbr | emp_name |         address         | birth_date 
 ---------+----------+-------------------------+------------
@@ -806,7 +805,7 @@ ais=# select * from personnel ;
 (9 строк)
 
 
-ais=# select * from org_chart ;
+select * from org_chart ;
 
     job_title     | emp_nbr | boss_emp_nbr |  salary   
 ------------------+---------+--------------+-----------
@@ -858,7 +857,7 @@ CREATE VIEW Create_paths ( level1, level2, level3, level4, level5 ) AS
 ```
 Добавлю в данные новых сотрудников, чтобы образовать новый
 узел, как будто в компании появился новый отдел:
-```
+```SQL
 INSERT INTO Personnel VALUES
 (  9, 'Алекс', 'ул. Ленина', '1985-12-07' ),
 ( 10, 'Джон', 'ул. Ш. Холмса', '1999-01-05' ),
@@ -876,7 +875,7 @@ INSERT 0 4
 
 Посмотрим на результат:
 ```SQL
-ais=# SELECT * FROM create_paths
+SELECT * FROM create_paths
 ORDER BY 1, 2, 3, 4, 5 ASC NULLS LAST;
 
  level1 | level2 | level3 | level4  |  level5  
@@ -896,7 +895,7 @@ ORDER BY 1, 2, 3, 4, 5 ASC NULLS LAST;
 
 Циклов допущено не было:
 ```SQL
-ais=# SELECT * FROM tree_test() ;
+SELECT * FROM tree_test() ;
  tree_test 
 -----------
  Tree
@@ -940,16 +939,16 @@ Procedural Language». Напишите небольшую функцию с п�
 следовательно, будет экономиться использование памяти. 
 Определим курсор в переменную:
 ```SQL
-ais=# BEGIN;
+BEGIN;
 BEGIN
 
-ais=# DECLARE 
+DECLARE 
     my_cursor CURSOR FOR SELECT * FROM personnel;
 DECLARE CURSOR
 ```
 Попробуем дважды вывести первые 5 строк из таблицы:
 ```SQL
-ais=# FETCH 5 FROM my_cursor;
+FETCH 5 FROM my_cursor;
  emp_nbr | emp_name |         address         | birth_date 
 ---------+----------+-------------------------+------------
        0 | вакансия |                         | 2014-05-19
@@ -959,7 +958,7 @@ ais=# FETCH 5 FROM my_cursor;
        4 | Захар    | ул. им. СУБД PostgreSQL | 1963-09-27
 (5 строк)
 
-ais=# FETCH 5 FROM my_cursor;
+FETCH 5 FROM my_cursor;
 FETCH PRIOR FROM my_cursor;
  emp_nbr | emp_name |       address        | birth_date 
 ---------+----------+----------------------+------------
@@ -977,7 +976,7 @@ FETCH PRIOR FROM my_cursor;
        8 | Николай  | наб. ОС Linux | 1944-12-01
 (1 строка)
 
-ais=# FETCH PRIOR FROM my_cursor;
+FETCH PRIOR FROM my_cursor;
  emp_nbr | emp_name |    address     | birth_date 
 ---------+----------+----------------+------------
        7 | Андрей   | пл. Баз данных | 1945-11-07
@@ -987,7 +986,7 @@ ais=# FETCH PRIOR FROM my_cursor;
 начнем уже со строки с `emp_nbr = 8`. Также завершим
 транзакцию:
 ```SQL
-ais=# FETCH 5 FROM my_cursor;
+FETCH 5 FROM my_cursor;
  emp_nbr | emp_name |      address       | birth_date 
 ---------+----------+--------------------+------------
        8 | Николай  | наб. ОС Linux      | 1944-12-01
@@ -997,7 +996,7 @@ ais=# FETCH 5 FROM my_cursor;
       12 | Владимир | ул. Мира           | 2002-02-13
 (5 строк)
 
-ais=# COMMIT;
+COMMIT;
 COMMIT
 ```
 
@@ -1077,11 +1076,11 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 Определим функцию и протестируем ее:
-```
+```SQL
 ais=# \i cursors_func.sql 
 CREATE FUNCTION
 
-ais=# SELECT * FROM get_employee_subordinates();
+SELECT * FROM get_employee_subordinates();
  boss_name |   subordinate_names    |                         job_titles                         |  salary   
 -----------+------------------------+------------------------------------------------------------+-----------
            | {Иван}                 | {Президент}                                                | 1000.0000
