@@ -18,5 +18,6 @@ Science of HSE University.
  * [HW-9](./HW-9): Performance Improvement
  * [HW-10](./HW-10): Server-side Programming
  * [HW-11](./HW-11): Full-Text Search
+ * [FINAL-PROJECT](./FINAL-PROJECT): Final course project with full database design and implementation
 
 **Author**: Vladislav Rubanov
